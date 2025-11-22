@@ -1,69 +1,31 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const inputs = Array.from(document.querySelectorAll(".code"));
+const codes = document.querySelectorAll(".code");
 
-    if (inputs.length === 0) return;
+codes[0].focus();
 
-    inputs[0].focus();
+codes.forEach((code, idx) => {
+    code.addEventListener("input", (e) => {
+        const value = e.target.value;
 
-    function focusIndex(i) {
-        if (i >= 0 && i < inputs.length) {
-            inputs[i].focus();
-            inputs[i].select?.();
+        // Allow only digits
+        if (!/^[0-9]$/.test(value)) {
+            e.target.value = "";
+            return;
         }
-    }
 
-    inputs.forEach((input, idx) => {
+        // Move to next box
+        if (idx < codes.length - 1) {
+            codes[idx + 1].focus();
+        }
+    });
 
-        // Move forward on input
-        input.addEventListener("input", (e) => {
-            const val = e.target.value.replace(/\D/g, "");
-            e.target.value = val;
-
-            if (val && idx < inputs.length - 1) {
-                focusIndex(idx + 1);
+    code.addEventListener("keydown", (e) => {
+        if (e.key === "Backspace") {
+            e.target.value = "";
+            
+            // Move to previous box
+            if (idx > 0) {
+                codes[idx - 1].focus();
             }
-        });
-
-        // Backspace logic
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Backspace") {
-                e.preventDefault();
-
-                // Case 1: current input has a value → clear it
-                if (input.value !== "") {
-                    input.value = "";
-                    return;
-                }
-
-                // Case 2: current is empty → clear previous + focus previous
-                if (idx > 0) {
-                    inputs[idx - 1].value = "";   // THIS LINE FIXES THE FAILING TEST CASE
-                    focusIndex(idx - 1);
-                }
-            }
-
-            // Allow only numbers
-            if (e.key.length === 1 && !/^\d$/.test(e.key)) {
-                e.preventDefault();
-            }
-        });
-
-        // Paste OTP
-        input.addEventListener("paste", (e) => {
-            e.preventDefault();
-            const text = e.clipboardData.getData("text").replace(/\D/g, "");
-            let pos = idx;
-
-            for (const digit of text) {
-                if (pos >= inputs.length) break;
-                inputs[pos].value = digit;
-                pos++;
-            }
-
-            if (pos < inputs.length) focusIndex(pos);
-            else inputs[inputs.length - 1].blur();
-        });
-
+        }
     });
 });
-;
