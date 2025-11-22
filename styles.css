@@ -1,2 +1,97 @@
 
-    
+    :root{
+    --bg:#f6f7f8;
+    --card:#ffffff;
+    --muted:#8a8a8a;
+    --accent:#000;
+    --input-border:#f0f0f0;
+}
+
+html,body{
+    height:100%;
+    margin:0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    background: var(--bg);
+}
+
+.page-wrap{
+    min-height:100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px;
+}
+
+.card{
+    width:92%;
+    max-width:1100px;
+    background:var(--card);
+    border-radius:12px;
+    border:2px solid #000;
+    padding:48px 60px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+#verification_heading{
+    text-align:center;
+    font-size:32px;
+    font-weight:700;
+    margin-bottom:18px;
+}
+
+#verification_subtext{
+    text-align:center;
+    color:var(--muted);
+    margin:0 0 34px 0;
+    line-height:1.5;
+    max-width:900px;
+    margin-left:auto;
+    margin-right:auto;
+    font-size:15px;
+}
+
+/* OTP inputs */
+.code-container{
+    display:flex;
+    gap:28px;
+    justify-content:center;
+    margin:18px 0 26px 0;
+    flex-wrap:wrap;
+}
+
+.code{
+    width:110px;
+    height:110px;
+    border-radius:8px;
+    border:1px solid var(--input-border);
+    font-size:72px;
+    text-align:center;
+    font-weight:500;
+    caret-color: transparent;
+    color: #7a7a7a;
+    background: linear-gradient(180deg, #fff 0%, #f9f9f9 100%);
+}
+
+.code:focus{
+    outline:none;
+    border-color:#ddd;
+    box-shadow:0 4px 14px rgba(0,0,0,0.06);
+    color:#222;
+}
+
+.info{
+    margin:26px auto 0;
+    max-width:640px;
+    background:#efefef;
+    border-radius:8px;
+    padding:14px 22px;
+    color:#666;
+    text-align:center;
+    font-size:14px;
+}
+
+@media (max-width:680px){
+    .code{ width:72px; height:72px; font-size:40px; }
+    .code-container{ gap:12px; }
+    .card{ padding:28px; }
+}
