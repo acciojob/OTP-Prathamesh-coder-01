@@ -1,16 +1,246 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="styles.css">
-</head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OTP Verify</title>
+<style>
+    :root{
+        --bg:#f6f7f8;
+        --card:#ffffff;
+        --muted:#8a8a8a;
+        --accent:#000;
+        --input-border:#f0f0f0;
+    }
+    html,body{
+        height:100%;
+        margin:0;
+        font-family: "Helvetica Neue", Arial, sans-serif;
+        background: var(--bg);
+    }
 
+    /* outer wrapper to mimic reference */
+    .page-wrap{
+        min-height:100%;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:40px;
+    }
+
+    .card{
+        width:92%;
+        max-width:1100px;
+        background:var(--card);
+        border-radius:12px;
+        border:2px solid #000;
+        padding:48px 60px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+
+    #verification_heading{
+        text-align:center;
+        font-size:32px;
+        font-weight:700;
+        margin:0 0 18px 0;
+    }
+
+    #verification_subtext{
+        text-align:center;
+        color:var(--muted);
+        margin:0 0 34px 0;
+        line-height:1.5;
+        max-width:900px;
+        margin-left:auto;
+        margin-right:auto;
+        font-size:15px;
+    }
+
+    /* OTP area */
+    .code-container{
+        display:flex;
+        gap:28px;
+        justify-content:center;
+        align-items:center;
+        margin:18px 0 26px 0;
+        flex-wrap:wrap;
+    }
+
+    .code{
+        width:110px;
+        height:110px;
+        border-radius:8px;
+        border:1px solid var(--input-border);
+        box-shadow: 0 0 0 1px rgba(0,0,0,0.02) inset;
+        font-size:72px;
+        text-align:center;
+        font-weight:500;
+        caret-color: transparent; /* hide caret to match design */
+        color: #7a7a7a;
+        background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(250,250,250,1) 100%);
+    }
+
+    .code:focus{
+        outline: none;
+        border-color: #ddd;
+        box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+        color: #222;
+    }
+
+    /* subtle rounded gray info box like reference */
+    .info{
+        margin: 26px auto 0 auto;
+        max-width:640px;
+        background:#efefef;
+        border-radius:8px;
+        padding:14px 22px;
+        color:#666;
+        text-align:center;
+        font-size:14px;
+    }
+
+    /* small responsive adjustments */
+    @media (max-width:680px){
+        .code{ width:72px; height:72px; font-size:40px; }
+        .code-container{ gap:12px; }
+        .card{ padding:28px; }
+    }
+</style>
+</head>
 <body>
-	<!-- the entire body must be written by student -->
-    <script type="text/javascript" src="./script.js">
+
+<div class="page-wrap">
+    <div class="card" role="main">
+        <h1 id="verification_heading">Verify Your Account</h1>
+        <p id="verification_subtext">
+            We emailed you the six digit code to <strong>acciojob@email.com</strong>.
+            Enter the code below to confirm your email address.
+        </p>
+
+        <div class="code-container" aria-label="OTP inputs">
+            <!-- six input boxes - must have class="code" -->
+            <input inputmode="numeric" pattern="\d*" maxlength="1" class="code" autocomplete="one-time-code" />
+            <input inputmode="numeric" pattern="\d*" maxlength="1" class="code" autocomplete="one-time-code" />
+            <input inputmode="numeric" pattern="\d*" maxlength="1" class="code" autocomplete="one-time-code" />
+            <input inputmode="numeric" pattern="\d*" maxlength="1" class="code" autocomplete="one-time-code" />
+            <input inputmode="numeric" pattern="\d*" maxlength="1" class="code" autocomplete="one-time-code" />
+            <input inputmode="numeric" pattern="\d*" maxlength="1" class="code" autocomplete="one-time-code" />
+        </div>
+
+        <div class="info">
+            This is design only. We didn't actually send you an email as we don't have your email, right?
+        </div>
+
+        <!-- show the uploaded reference image (local file). URL/path provided below -->
+        <div style="margin-top:18px; text-align:center; font-size:12px; color:#999;">
+            Reference image (local): <code>/mnt/data/219608189-656bec0f-9c47-4826-a45d-6622686c1d36.png</code>
+        </div>
+    </div>
+</div>
+
+<script>
+/*
+ Behavior:
+ - each .code accepts only a single digit (0-9)
+ - typing a digit focuses next field automatically
+ - backspace deletes current; if empty, moves to previous and clears it
+ - supports paste: when user pastes a string of digits it fills sequentially
+*/
+
+(function(){
+    const inputs = Array.from(document.querySelectorAll('.code'));
+
+    if(inputs.length === 0) return;
+
+    // focus first input on load
+    inputs[0].focus();
+
+    // Helper: move focus to index if valid
+    function focusIndex(i) {
+        if(i >= 0 && i < inputs.length) {
+            inputs[i].focus();
+            inputs[i].select?.();
+        }
+    }
+
+    inputs.forEach((input, idx) => {
+        // prevent non-digit via input event
+        input.addEventListener('input', (e) => {
+            const val = e.target.value;
+            // keep only last digit if user somehow typed/pasted one char
+            const digit = val.replace(/\D/g, '').slice(-1);
+            e.target.value = digit || '';
+            if(digit){
+                // move forward
+                if(idx < inputs.length - 1){
+                    focusIndex(idx + 1);
+                } else {
+                    // last box filled - keep focus
+                    e.target.blur(); // optionally blur after final entry
+                }
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            const key = e.key;
+
+            if(key === 'Backspace'){
+                e.preventDefault(); // we'll handle deletion manually
+                if(input.value !== ''){
+                    // clear current
+                    input.value = '';
+                    // stay focused here
+                    return;
+                } else {
+                    // move to previous and clear it
+                    if(idx > 0){
+                        inputs[idx - 1].value = '';
+                        focusIndex(idx - 1);
+                    }
+                }
+            } else if(key === 'ArrowLeft'){
+                e.preventDefault();
+                focusIndex(idx - 1);
+            } else if(key === 'ArrowRight'){
+                e.preventDefault();
+                focusIndex(idx + 1);
+            } else {
+                // for other keys, allow numeric keys only (but do not block navigation keys)
+                // we'll let input event sanitize non-digits; however prevent letters on keypress on some browsers:
+                if(key.length === 1 && !/[\d]/.test(key)){
+                    e.preventDefault();
+                }
+            }
+        });
+
+        // handle paste into any input - fill from that index forward
+        input.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text');
+            const digits = paste.replace(/\D/g, '').split('');
+            if(digits.length === 0) return;
+            let cur = idx;
+            for(let d of digits){
+                if(cur >= inputs.length) break;
+                inputs[cur].value = d;
+                cur++;
+            }
+            // focus the next empty box or blur if done
+            if(cur < inputs.length){
+                focusIndex(cur);
+            } else {
+                inputs[inputs.length - 1].blur();
+            }
+        });
+
+        // ensure mobile numeric keyboard
+        input.addEventListener('focus', () => {
+            // optional: select content (if any)
+            if(input.value) input.select?.();
+        });
+    });
+})();
 </script>
 
 </body>
-
 </html>
