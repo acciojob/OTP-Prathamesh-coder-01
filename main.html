@@ -19,7 +19,7 @@
         background: var(--bg);
     }
 
-    /* outer wrapper to mimic reference */
+  
     .page-wrap{
         min-height:100%;
         display:flex;
@@ -131,31 +131,25 @@
             This is design only. We didn't actually send you an email as we don't have your email, right?
         </div>
 
-        <!-- show the uploaded reference image (local file). URL/path provided below -->
-        <div style="margin-top:18px; text-align:center; font-size:12px; color:#999;">
+
+        <!-- <div style="margin-top:18px; text-align:center; font-size:12px; color:#999;">
             Reference image (local): <code>/mnt/data/219608189-656bec0f-9c47-4826-a45d-6622686c1d36.png</code>
-        </div>
+        </div> -->
     </div>
 </div>
 
 <script>
-/*
- Behavior:
- - each .code accepts only a single digit (0-9)
- - typing a digit focuses next field automatically
- - backspace deletes current; if empty, moves to previous and clears it
- - supports paste: when user pastes a string of digits it fills sequentially
-*/
+
 
 (function(){
     const inputs = Array.from(document.querySelectorAll('.code'));
 
     if(inputs.length === 0) return;
 
-    // focus first input on load
+  
     inputs[0].focus();
 
-    // Helper: move focus to index if valid
+
     function focusIndex(i) {
         if(i >= 0 && i < inputs.length) {
             inputs[i].focus();
@@ -164,14 +158,14 @@
     }
 
     inputs.forEach((input, idx) => {
-        // prevent non-digit via input event
+    
         input.addEventListener('input', (e) => {
             const val = e.target.value;
-            // keep only last digit if user somehow typed/pasted one char
+            
             const digit = val.replace(/\D/g, '').slice(-1);
             e.target.value = digit || '';
             if(digit){
-                // move forward
+              
                 if(idx < inputs.length - 1){
                     focusIndex(idx + 1);
                 } else {
@@ -185,14 +179,14 @@
             const key = e.key;
 
             if(key === 'Backspace'){
-                e.preventDefault(); // we'll handle deletion manually
+                e.preventDefault(); 
                 if(input.value !== ''){
                     // clear current
                     input.value = '';
-                    // stay focused here
+                  
                     return;
                 } else {
-                    // move to previous and clear it
+                  
                     if(idx > 0){
                         inputs[idx - 1].value = '';
                         focusIndex(idx - 1);
@@ -205,15 +199,14 @@
                 e.preventDefault();
                 focusIndex(idx + 1);
             } else {
-                // for other keys, allow numeric keys only (but do not block navigation keys)
-                // we'll let input event sanitize non-digits; however prevent letters on keypress on some browsers:
+               
                 if(key.length === 1 && !/[\d]/.test(key)){
                     e.preventDefault();
                 }
             }
         });
 
-        // handle paste into any input - fill from that index forward
+        
         input.addEventListener('paste', (e) => {
             e.preventDefault();
             const paste = (e.clipboardData || window.clipboardData).getData('text');
@@ -225,7 +218,7 @@
                 inputs[cur].value = d;
                 cur++;
             }
-            // focus the next empty box or blur if done
+          
             if(cur < inputs.length){
                 focusIndex(cur);
             } else {
@@ -233,9 +226,8 @@
             }
         });
 
-        // ensure mobile numeric keyboard
         input.addEventListener('focus', () => {
-            // optional: select content (if any)
+        
             if(input.value) input.select?.();
         });
     });
